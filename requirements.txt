@@ -1,0 +1,26 @@
+--extra-index-url https://download.pytorch.org/whl/cu126
+addict
+diffusers
+gradio
+huggingface_hub
+matplotlib
+numpy==1.26.4
+onnxruntime
+opencv_python
+Pillow
+pycocotools
+PyYAML
+requests
+setuptools
+supervision
+termcolor
+timm
+transformers
+yapf
+nltk
+fairscale
+litellm
+fastapi
+uvicorn[fastapi]
+torch
+torchvision

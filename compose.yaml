@@ -1,0 +1,6 @@
+services:
+  webserver:
+    network_mode: host
+    privileged: true
+    build: .
+    runtime: nvidia
