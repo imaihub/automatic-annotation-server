@@ -10,7 +10,7 @@ from requests import Response
 from .bbox import BoundingBox
 
 
-def parse_grounding_dino_server_response(response: Response) -> list:
+def parse_grounding_dino_server_response(response: Response) -> list[BoundingBox]:
     """
     Parse the response from the predict endpoint in a Grounding Dino Server
 
@@ -28,11 +28,11 @@ def parse_grounding_dino_server_response(response: Response) -> list:
     return response_boxes
 
 
-def predict_grounding_dino_external(image_np: np.ndarray, text_prompt: str, box_threshold: float, text_threshold: float, ip_address: Optional[str] = "141.252.12.25") -> list:
+def predict_grounding_dino_external(image_np: np.ndarray, text_prompt: str, box_threshold: float, text_threshold: float, ip_address: Optional[str] = "localhost") -> list[BoundingBox]:
     """
     This function is used to send an inference request to a Grounding Server HTTP POST endpoint /predict, this response gets parsed into a list of bounding boxes in parse_predictions
 
-    :param ip_address: iP address hosting the inference server
+    :param ip_address: IP address hosting the inference server
     :param image_np: numpy array with shape (H, W, 3) and assuming it has been converted to RGB already if loaded in through cv2.imread
     :param text_prompt: tells Grounding Dino which classes to detect
     :param text_threshold: text confidence threshold
