@@ -2,6 +2,7 @@ import asyncio
 import io
 import os
 import sys
+import traceback
 
 import torch
 from PIL import Image
@@ -19,7 +20,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_PATH = "GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
 CHECKPOINT_PATH = "./groundingdino_swint_ogc.pth"
 DEVICE = "cuda"
-FP16_INFERENCE = True
+FP16_INFERENCE = False
 
 # Initialize FastAPI
 app = FastAPI()
@@ -31,15 +32,15 @@ lock = asyncio.Lock()
 @app.on_event("startup")
 def load_groundingdino_model():
     global model
-    model = load_model(CONFIG_PATH, CHECKPOINT_PATH)
+    model = load_model(CONFIG_PATH, CHECKPOINT_PATH, device=DEVICE)
     if FP16_INFERENCE and DEVICE == "cuda":
         model = model.half()
 
 
 @app.post("/predict/")
 async def predict_endpoint(
-    request: Request,
-    file: UploadFile = File(...),
+        request: Request,
+        file: UploadFile = File(...),
 ):
     try:
         async with lock:
@@ -52,10 +53,11 @@ async def predict_endpoint(
             image = load_image(image)
 
             # Preprocess image
-            # image_tensor = torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0).float().to(DEVICE)
             image_tensor = image[1]
             if FP16_INFERENCE and DEVICE == "cuda":
                 image_tensor = image_tensor.half()
+            else:
+                image_tensor = image_tensor.float()
 
             # Perform prediction
             boxes, logits, phrases = predict(
@@ -88,4 +90,5 @@ async def predict_endpoint(
                 "logits": confidences,
             }
     except Exception as e:
+        traceback.print_exc()
         return JSONResponse(content={"error": str(e)}, status_code=500)

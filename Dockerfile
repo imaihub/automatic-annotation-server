@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /GroundingDINO
 
-RUN python -m pip install -r requirements_pinned.txt
+RUN python -m pip install -r requirements.txt
 
 # When using build isolation, PyTorch with newer CUDA is installed and can't compile GroundingDINO
 RUN python -m pip install --no-cache-dir wheel
